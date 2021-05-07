@@ -12,6 +12,20 @@
      
     tasks:
 
+      - name: Check if docker installed before
+        shell: "which docker"
+        register: result
+        ignore_errors: true
+
+      - name: Print docker installation info
+        debug:
+          msg: Docker is already installed on {{ result.stdout }}
+        when: result.rc == 0
+
+      - name: Exit if docker exist
+        meta: end_play
+        when: result.rc == 0
+
       - name: Remove old packages
         apt:
           name: "{{ packages_to_remove }}"
